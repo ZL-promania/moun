@@ -214,7 +214,6 @@ detector = Detector()
 detector.add_layer(z_pos=200, rows=2, cols=4, phi=0)  # 第二层在 z=200
 detector.add_layer(z_pos=100, rows=2, cols=4, phi=90)  # 第二层在 z=200
 
-
 # 3. 获取发射点 (0, 0, 0) 以 45 度角发射的探测效率
 # 假设发射角度为 theta = 45°（水平），phi = 30°（俯仰角）
 efficiency = detector.caculate_eff(0, 0, 0,45,30)  # 计算发射点 (0, 0, 0) 的探测效率
