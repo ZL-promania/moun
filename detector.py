@@ -9,6 +9,7 @@ class Board:
 
     size_x = 1000  # 探测器的x轴尺寸
     size_y = 100  # 探测器的y轴尺寸
+    size_z=20 #z轴尺寸
 
     def __init__(self, x, y, threshold):
         """
@@ -44,6 +45,8 @@ class Board:
         # 计算旋转后的坐标
         # rotated_x = (x - self.x) * np.cos(self.phi) - (y - self.y) * np.sin(self.phi)
         return self.efficiency(x)
+    
+
 
 
 class Layer:
@@ -178,26 +181,31 @@ class Detector:
 
         self.intersections = intersections
         return intersections
+    
 
-    def caculate_eff(self):
+    def caculate_eff(self,x0,y0,z0,theta,phi):
         """
         计算探测效率。
         """
+        self.find_intersections(x0, y0, z0, theta, phi)
         efficiencys = []
         for intersection in self.intersections:
             if intersection:
                 x, y, z, no_layer = intersection
 
-                efficiencys = self.layers[no_layer].eff_Layer(x, y)
+                efficiency = self.layers[no_layer].eff_Layer(x, y)
+
             else:
                 efficiency = 0
-                print(f"Efficiency at ({x}, {y}, {z}): {efficiency}")
+                print(f"Efficiency at ({x0}, {y0}, {z0}): {efficiency}")
         inefficiency_total = 1
 
         for efficiency in efficiencys:
             inefficiency_total *= 1 - efficiency
         
         efficiency_total = 1 - inefficiency_total
+        return efficiency_total
+    
 
 
 detector = Detector()
@@ -209,9 +217,9 @@ detector.add_layer(z_pos=100, rows=2, cols=4, phi=90)  # 第二层在 z=200
 
 # 3. 获取发射点 (0, 0, 0) 以 45 度角发射的探测效率
 # 假设发射角度为 theta = 45°（水平），phi = 30°（俯仰角）
-efficiency = detector.get_efficiency_at(x=0, y=0, z=0)  # 计算发射点 (0, 0, 0) 的探测效率
+efficiency = detector.caculate_eff(0, 0, 0,45,30)  # 计算发射点 (0, 0, 0) 的探测效率
 print(f"Efficiency at (0, 0, 0): {efficiency}")
 
-# 4. 计算其他位置的效率，例如 (250, 300, 150)
-efficiency_2 = detector.get_efficiency_at(x=250, y=300, z=150)
+## 4. 计算其他位置的效率，例如 (250, 300, 150)
+efficiency_2 = detector.caculate_eff(250, 300, 150,0,0)
 print(f"Efficiency at (250, 300, 150): {efficiency_2}")
